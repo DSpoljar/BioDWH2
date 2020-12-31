@@ -28,7 +28,7 @@ public class DrugCentralUpdater extends Updater<DrugCentralDataSource> {
     public Version getNewestVersion() throws UpdaterException {
         try {
             String html = HTTPClient.getWebsiteSource(DownloadPageUrl);
-            for (String word : html.split(" {4}")) {
+            for (String word : html.split(" {4}")) { // 4x Leerzeichen
                 if (word.contains("drugcentral.dump.")) {
                     String version = word.split("href=\"")[1].split("\\.")[3];
                     return parseVersion(
