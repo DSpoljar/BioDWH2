@@ -23,15 +23,13 @@ public class DisGeNetUpdater extends Updater<DisGeNetDataSource>
     public final String CurrentVersion = "https://www.disgenet.org/static/disgenet_ap1/files/downloads/readme.txt";
 
 
-
-    //Adding elements to map
-
-
     private static final String[] FileNames =
             {
 
             "curated_gene_disease_associations.tsv.gz", "befree_gene_disease_associations.tsv.gz",
-            "all_gene_disease_pmid_associations.tsv.gz", "all_gene_disease_associations.tsv.gz"
+            "all_gene_disease_pmid_associations.tsv.gz", "all_gene_disease_associations.tsv.gz",
+            "curated_variant_disease_associations.tsv.gz", "befree_variant_disease_associations.tsv.gz",
+            "all_variant_disease_associations.tsv.gz", "all_variant_disease_pmid_associations.tsv.gz"
 
             };
 
@@ -58,6 +56,13 @@ public class DisGeNetUpdater extends Updater<DisGeNetDataSource>
         dateMapper.put("11", "November");
         dateMapper.put("12", "December");
 
+        /*
+        final String[] months =
+                {
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+                };
+        */
 
 
         try
@@ -85,8 +90,6 @@ public class DisGeNetUpdater extends Updater<DisGeNetDataSource>
 
         }
 
-            //System.out.println(splitVersion[splitVersion.length-2]+splitVersion[splitVersion.length-1]); test purposes.
-
 
         catch (IOException e)
         {
@@ -98,10 +101,14 @@ public class DisGeNetUpdater extends Updater<DisGeNetDataSource>
 
     private Version parseVersion(String version) throws UpdaterMalformedVersionException
     {
-        try {
+        try
+        {
             return Version.parse(version);
-        } catch (NullPointerException | NumberFormatException e) {
+
+        } catch (NullPointerException | NumberFormatException e)
+        {
             throw new UpdaterMalformedVersionException(version, e);
+
         }
     }
 
