@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
-public class HPOUpdater extends Updater<HPODataSource>
+public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
 {
 
     public final String currentVersionLink = "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo";
@@ -43,6 +43,18 @@ public class HPOUpdater extends Updater<HPODataSource>
         {
             e.printStackTrace();
         }
+
+        return null;
+    }
+
+    @Override
+    protected String getDownloadUrl() {
+        return currentVersionLink;
+    }
+
+    @Override
+    protected Version getVersionFromDataVersionLine(String dataVersion)
+    {
 
         return null;
     }
@@ -80,13 +92,18 @@ public class HPOUpdater extends Updater<HPODataSource>
 
         try
         {
-            final String targetFilePath = dataSource.resolveSourceFilePath(workspace, "testFile");
+            final String targetFilePath = dataSource.resolveSourceFilePath(workspace, getTargetFileName());
             HTTPClient.downloadFileAsBrowser(downloadLink, targetFilePath);
-            
+
         } catch (IOException e) {
-            throw new UpdaterConnectionException("Failed to download '" + "testFile" + "'", e);
+            throw new UpdaterConnectionException("Failed to download '" + getTargetFileName() + "'", e);
         }
         return true;
+    }
+
+    @Override
+    protected String getTargetFileName() {
+        return "ho.obo";
     }
 
 
