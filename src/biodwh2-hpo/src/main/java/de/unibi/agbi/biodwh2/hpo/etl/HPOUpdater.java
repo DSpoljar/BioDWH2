@@ -31,37 +31,38 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
 
 
 
+
     @Override
     public Version getNewestVersion() throws UpdaterException
     {
 
         try
         {
-           return parseVersion(getVersionFromOBOFile());
-
-        } catch (IOException e)
-        {
+            return getVersionFromDownloadFile();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return null;
+          return null;
     }
 
     @Override
     protected String getDownloadUrl() {
-        return currentVersionLink;
+        return downloadLink;
     }
 
     @Override
     protected Version getVersionFromDataVersionLine(String dataVersion)
     {
-
-        return null;
+        System.out.println("test dataversion"+"\n");
+        final String[] versionParts = dataVersion.split("releases/")[1].split("-");
+        return new Version(Integer.parseInt(versionParts[0]), Integer.parseInt(versionParts[1]),
+                           Integer.parseInt(versionParts[2]));
     }
 
 
-    private String getVersionFromOBOFile() throws IOException
+    private Version getVersionFromDownloadFile() throws IOException
     {
+        System.out.println("test download file"+"\n");
         InputStreamReader inputReader = new InputStreamReader(HTTPClient.getUrlInputStream(currentVersionLink),
                                                               StandardCharsets.UTF_8);
         BufferedReader bufferedReader = new BufferedReader(inputReader);
@@ -69,15 +70,38 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
         while (line != null && !line.trim().startsWith("data-version:"))
             line = bufferedReader.readLine();
 
-        return line;
+        try
+        {
+            return parseVersion(line);
 
+        } catch (UpdaterMalformedVersionException e)
+        {
+            e.printStackTrace();
+        }
+       return null;
     }
 
 
     private Version parseVersion(String version) throws UpdaterMalformedVersionException
     {
-        try {
+
+        System.out.println("currentversion "+version +"\n");
+        version = version.replaceAll("data-version: hp/releases/", "");
+
+        for(int i = 0; i < version.length(); i++)
+        {
+           if (version.charAt(i) == '-')
+           {
+             version =  version.replace('-', '.');
+           }
+
+        }
+        System.out.println("currentversion "+version+"\n");
+
+        try
+        {
             return Version.parse(version);
+
         } catch (NullPointerException | NumberFormatException e) {
             throw new UpdaterMalformedVersionException(version, e);
         }
