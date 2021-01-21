@@ -33,27 +33,30 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
 
 
     @Override
-    public Version getNewestVersion() throws UpdaterException
+    public Version getNewestVersion()
     {
 
         try
         {
             return getVersionFromDownloadFile();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
         }
           return null;
     }
 
     @Override
-    protected String getDownloadUrl() {
+    protected String getDownloadUrl()
+    {
         return downloadLink;
     }
 
     @Override
     protected Version getVersionFromDataVersionLine(String dataVersion)
     {
-        System.out.println("test dataversion"+"\n");
+
         final String[] versionParts = dataVersion.split("releases/")[1].split("-");
         return new Version(Integer.parseInt(versionParts[0]), Integer.parseInt(versionParts[1]),
                            Integer.parseInt(versionParts[2]));
@@ -62,7 +65,7 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
 
     private Version getVersionFromDownloadFile() throws IOException
     {
-        System.out.println("test download file"+"\n");
+
         InputStreamReader inputReader = new InputStreamReader(HTTPClient.getUrlInputStream(currentVersionLink),
                                                               StandardCharsets.UTF_8);
         BufferedReader bufferedReader = new BufferedReader(inputReader);
@@ -85,7 +88,7 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
     private Version parseVersion(String version) throws UpdaterMalformedVersionException
     {
 
-        System.out.println("currentversion "+version +"\n");
+
         version = version.replaceAll("data-version: hp/releases/", "");
 
         for(int i = 0; i < version.length(); i++)
@@ -96,7 +99,7 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
            }
 
         }
-        System.out.println("currentversion "+version+"\n");
+
 
         try
         {
@@ -126,7 +129,8 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
     }
 
     @Override
-    protected String getTargetFileName() {
+    protected String getTargetFileName()
+    {
         return "ho.obo";
     }
 
