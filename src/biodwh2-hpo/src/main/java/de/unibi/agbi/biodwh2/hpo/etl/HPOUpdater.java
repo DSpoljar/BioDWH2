@@ -112,22 +112,6 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
 
 
 
-
-    @Override
-    protected boolean tryUpdateFiles(final Workspace workspace) throws UpdaterConnectionException
-    {
-
-        try
-        {
-            final String targetFilePath = dataSource.resolveSourceFilePath(workspace, getTargetFileName());
-            HTTPClient.downloadFileAsBrowser(downloadLink, targetFilePath);
-
-        } catch (IOException e) {
-            throw new UpdaterConnectionException("Failed to download '" + getTargetFileName() + "'", e);
-        }
-        return true;
-    }
-
     @Override
     protected String getTargetFileName()
     {
