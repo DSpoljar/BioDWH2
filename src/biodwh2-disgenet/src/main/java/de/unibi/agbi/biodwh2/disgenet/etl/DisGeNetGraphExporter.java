@@ -39,6 +39,35 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
     {
         graph.setNodeIndexPropertyKeys("GENE_ID", "DISEASE_ID");
 
+        MappingIterator<DisGeNetModel> iterator = null;
+
+        try
+        {
+            iterator = FileUtils.openGzipTsvWithHeader(workspace, dataSource, "curated_gene_disease_associations.tsv.gz", DisGeNetModel.class);
+
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        List<DisGeNetModel> rows = null;
+        try
+        {
+            rows = iterator.readAll();
+
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        for (DisGeNetModel row : rows)
+        {
+            //createGeneNode(graph, row);
+            //createDiseaseNode(graph, row);
+            // System.out.println("row is: "+row);
+
+        }
 
 
 
@@ -50,18 +79,22 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
     private Node createGeneNode(final Graph graph, DisGeNetModel entry)
     {
-        if (graph.findNode(entry.geneID).isEmpty())
+        Node geneNode = graph.findNode("Gene", "id", entry.geneID);
+
+        if (geneNode == null)
         {
-            Node geneNode = createNode(graph, "Gene");
-            geneNode.setProperty("ID", entry.geneID);
-            geneNode.setProperty("GENE_SYMBOL", entry.geneSymbol);
+            geneNode = createNode(graph, "Gene");
+            geneNode.setProperty("id", entry.geneID);
+            geneNode.setProperty("gene_symbol", entry.geneSymbol);
             graph.update(geneNode);
             return  geneNode;
         }
         else
         {
-           Node currentNode = graph.findNode(entry.geneID);
-            return currentNode;
+
+           graph.update(geneNode);
+           return geneNode;
+
         }
 
 
@@ -69,23 +102,26 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
     private Node createDiseaseNode(final Graph graph, DisGeNetModel entry)
     {
-        if (graph.findNode(entry.diseaseID).isEmpty())
+        Node diseaseNode = graph.findNode("Disease", "id", entry.geneID);
+
+        if (diseaseNode == null)
         {
-            Node diseaseNode = createNode(graph, "Disease");
-            diseaseNode.setProperty("ID", entry.diseaseID);
-            diseaseNode.setProperty("DISEASE_NAME", entry.diseaseName);
-            diseaseNode.setProperty("DISEASE_TYPE", entry.diseaseType);
-            diseaseNode.setProperty("DISEASE_CLASS", entry.diseaseClass);
-            diseaseNode.setProperty("DISEASE_SEMANTICTYPE", entry.diseaseSemanticType);
+            diseaseNode = createNode(graph, "Disease");
+            diseaseNode.setProperty("id", entry.diseaseID);
+            diseaseNode.setProperty("disease_name", entry.diseaseName);
+            diseaseNode.setProperty("disease_type", entry.diseaseType);
+            diseaseNode.setProperty("disease_class", entry.diseaseClass);
+            diseaseNode.setProperty("disease_semanticType", entry.diseaseSemanticType);
             graph.update(diseaseNode);
             return diseaseNode;
         }
-        else {
+        else
+            {
 
-            Node currentNode = graph.findNode(entry.diseaseID);
-            return currentNode;
+            graph.update(diseaseNode);
+            return diseaseNode;
 
-        }
+          }
 
 
     }
