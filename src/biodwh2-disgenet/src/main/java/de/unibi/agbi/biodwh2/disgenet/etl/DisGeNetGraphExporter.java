@@ -63,9 +63,13 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
         for (DisGeNetModel row : rows)
         {
-            //createGeneNode(graph, row);
-            //createDiseaseNode(graph, row);
-            // System.out.println("row is: "+row);
+            if (row.geneID.equals("Gene") )
+                createGeneNode(graph, row);
+
+            if (row.diseaseID.equals("Disease"))
+                createDiseaseNode(graph, row);
+            //
+
 
         }
 
