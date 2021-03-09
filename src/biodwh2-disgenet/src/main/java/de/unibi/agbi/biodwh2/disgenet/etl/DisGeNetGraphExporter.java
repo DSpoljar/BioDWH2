@@ -8,10 +8,12 @@ import de.unibi.agbi.biodwh2.core.exceptions.ExporterFormatException;
 import de.unibi.agbi.biodwh2.core.io.FileUtils;
 import de.unibi.agbi.biodwh2.core.io.obo.OboEntry;
 import de.unibi.agbi.biodwh2.core.io.obo.OboReader;
+import de.unibi.agbi.biodwh2.core.model.graph.Edge;
 import de.unibi.agbi.biodwh2.core.model.graph.Graph;
 import de.unibi.agbi.biodwh2.core.model.graph.Node;
 import de.unibi.agbi.biodwh2.disgenet.DisGeNetDataSource;
 import de.unibi.agbi.biodwh2.disgenet.model.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.FileReader;
@@ -41,6 +43,12 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
         MappingIterator<DisGeNetModel> iterator = null;
 
+        int counter = 0;
+
+        // Initializing temporary nodes for the edges.
+        Node tempGeneNode = null;
+        Node tempDiseaseNode = null;
+
         try
         {
             iterator = FileUtils.openGzipTsvWithHeader(workspace, dataSource, "curated_gene_disease_associations.tsv.gz", DisGeNetModel.class);
@@ -63,12 +71,33 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
         for (DisGeNetModel row : rows)
         {
-            if (row.geneID.equals("Gene") )
-                createGeneNode(graph, row);
+            // Testing the mapping so a threshold for 10 nodes each is created temporarily.
 
-            if (row.diseaseID.equals("Disease"))
-                createDiseaseNode(graph, row);
-            //
+            counter +=1;
+
+            if (counter <= 10)
+            {
+
+               tempGeneNode = createGeneNode(graph, row, row.geneID, row.geneSymbol);
+
+               tempDiseaseNode = createDiseaseNode(graph, row, row.diseaseID, row.diseaseName, row.diseaseType, row.diseaseClass,
+                                  row.diseaseSemanticType);
+
+               // add edges here
+                Edge edge = graph.addEdge(tempGeneNode, tempDiseaseNode, "ASSOCIATED_WITH");
+                edge.setProperty("score", row.score);
+
+
+                tempGeneNode = null;
+                tempDiseaseNode = null;
+
+            }
+            else
+                {
+                break;
+            }
+
+
 
 
         }
@@ -81,15 +110,16 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
     // Splitting different nodes and adding their respective properties (entries provisional):
 
-    private Node createGeneNode(final Graph graph, DisGeNetModel entry)
+    private Node createGeneNode(final Graph graph, DisGeNetModel entry, String ID, String geneSymbol)
     {
         Node geneNode = graph.findNode("Gene", "id", entry.geneID);
 
         if (geneNode == null)
         {
+
             geneNode = createNode(graph, "Gene");
-            geneNode.setProperty("id", entry.geneID);
-            geneNode.setProperty("gene_symbol", entry.geneSymbol);
+            geneNode.setProperty(ID, entry.geneID);
+            geneNode.setProperty(geneSymbol, entry.geneSymbol);
             graph.update(geneNode);
             return  geneNode;
         }
@@ -104,18 +134,18 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
     }
 
-    private Node createDiseaseNode(final Graph graph, DisGeNetModel entry)
+    private Node createDiseaseNode(final Graph graph, DisGeNetModel entry, String id,  String name, String type, String disClass, String semanticType)
     {
         Node diseaseNode = graph.findNode("Disease", "id", entry.geneID);
 
         if (diseaseNode == null)
         {
             diseaseNode = createNode(graph, "Disease");
-            diseaseNode.setProperty("id", entry.diseaseID);
-            diseaseNode.setProperty("disease_name", entry.diseaseName);
-            diseaseNode.setProperty("disease_type", entry.diseaseType);
-            diseaseNode.setProperty("disease_class", entry.diseaseClass);
-            diseaseNode.setProperty("disease_semanticType", entry.diseaseSemanticType);
+            diseaseNode.setProperty(id, entry.diseaseID);
+            diseaseNode.setProperty(name, entry.diseaseName);
+            diseaseNode.setProperty(type, entry.diseaseType);
+            diseaseNode.setProperty(disClass, entry.diseaseClass);
+            diseaseNode.setProperty(semanticType, entry.diseaseSemanticType);
             graph.update(diseaseNode);
             return diseaseNode;
         }

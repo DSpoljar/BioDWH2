@@ -26,12 +26,12 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
     {
         graph.setNodeIndexPropertyKeys("id");
         try {
-            OboReader reader = new OboReader(dataSource.resolveSourceFilePath(workspace, "ho.obo"), "UTF-8");
+            OboReader reader = new OboReader(dataSource.resolveSourceFilePath(workspace, "hp.obo"), "UTF-8");
             for (OboEntry entry : reader)
                 if (entry.getName().equals("Term"))
                     exportEntry(graph, entry);
         } catch (IOException e) {
-            throw new ExporterFormatException("Failed to export ho.obo", e);
+            throw new ExporterFormatException("Failed to export hp.obo", e);
         }
         return true;
 
