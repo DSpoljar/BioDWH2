@@ -26,6 +26,7 @@ import java.util.Map;
 public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(DisGeNetGraphExporter.class);
+    private String[] tsvFiles = new String[4];
 
 
     public DisGeNetGraphExporter(final DisGeNetDataSource dataSource)
@@ -41,6 +42,13 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
     {
         graph.setNodeIndexPropertyKeys("GENE_ID", "DISEASE_ID");
 
+        // TSV-Files for Gene-Disease associations
+        String[] tsvFiles = new String[4];
+        tsvFiles[0] = "all_gene_disease_associations.tsv.gz";
+        tsvFiles[1] = "all_gene_disease_pmid_associations.tsv.gz";
+        tsvFiles[2] = "befree_gene_disease_associations.tsv.gz";
+        tsvFiles[3] = "curated_gene_disease_associations.tsv.gz";
+
         MappingIterator<DisGeNetModel> iterator = null;
 
         int counter = 0;
@@ -49,53 +57,59 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
         Node tempGeneNode = null;
         Node tempDiseaseNode = null;
 
-        try
+        for (int i = 0; i < tsvFiles.length; i++)
         {
-            iterator = FileUtils.openGzipTsvWithHeader(workspace, dataSource, "curated_gene_disease_associations.tsv.gz", DisGeNetModel.class);
-
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        List<DisGeNetModel> rows = null;
-        try
-        {
-            rows = iterator.readAll();
-
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        for (DisGeNetModel row : rows)
-        {
-            // Testing the mapping so a threshold for 10 nodes each is created temporarily.
-
-            counter +=1;
-
-            if (counter <= 10)
+            try
             {
-
-               tempGeneNode = createGeneNode(graph, row, row.geneID, row.geneSymbol);
-
-               tempDiseaseNode = createDiseaseNode(graph, row, row.diseaseID, row.diseaseName, row.diseaseType, row.diseaseClass,
-                                  row.diseaseSemanticType);
-
-               // add edges here
-                Edge edge = graph.addEdge(tempGeneNode, tempDiseaseNode, "ASSOCIATED_WITH");
-                edge.setProperty("score", row.score);
-
-
-                tempGeneNode = null;
-                tempDiseaseNode = null;
+                iterator = FileUtils.openGzipTsvWithHeader(workspace, dataSource, tsvFiles[i], DisGeNetModel.class);
 
             }
-            else
+
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            List<DisGeNetModel> rows = null;
+            try
+            {
+                rows = iterator.readAll();
+
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            for (DisGeNetModel row : rows)
+            {
+                // Testing the mapping so a threshold for 10 nodes each is created temporarily.
+
+                counter +=1;
+
+                if (counter <= 10)
                 {
-                break;
-            }
+
+                    tempGeneNode = createGeneNode(graph, row, row.geneID, row.geneSymbol);
+
+                    tempDiseaseNode = createDiseaseNode(graph, row, row.diseaseID, row.diseaseName, row.diseaseType, row.diseaseClass,
+                                                        row.diseaseSemanticType);
+
+                    // add edges here
+                    Edge edge = graph.addEdge(tempGeneNode, tempDiseaseNode, "ASSOCIATED_WITH");
+                    edge.setProperty("score", row.score);
+
+
+                    tempGeneNode = null;
+                    tempDiseaseNode = null;
+
+                }
+                else
+                {
+                    break;
+                }
+        }
+
+
 
 
 
