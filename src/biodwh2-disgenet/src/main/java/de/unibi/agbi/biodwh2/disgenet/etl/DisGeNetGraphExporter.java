@@ -49,17 +49,24 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
         tsvFiles_Genes[2] = "befree_gene_disease_associations.tsv.gz";
         tsvFiles_Genes[3] = "curated_gene_disease_associations.tsv.gz";
 
-        String[] tsvFiles_Disease = new String[2];
+        String[] tsvFiles_Disease = new String[4];
+        tsvFiles_Disease[0] = "all_variant_disease_associations.tsv.gz";
+        tsvFiles_Disease[1] = "all_variant_disease_pmid_associations.tsv.gz";
+        tsvFiles_Disease[2] = "befree_variant_disease_associations.tsv.gz";
+        tsvFiles_Disease[3] = "curated_variant_disease_associations.tsv.gz";
+
 
 
         MappingIterator<DisGeNetModel> iterator = null;
         MappingIterator<DisGeNetModelVariantDisease> iterator_2 = null;
 
         int counter = 0;
+        int counter_2 = 0;
 
         // Initializing temporary nodes for the edges.
         Node tempGeneNode = null;
         Node tempDiseaseNode = null;
+        Node tempVariantDiseaseNode = null;
 
         for (int i = 0; i < tsvFiles_Genes.length; i++)
         {
@@ -119,7 +126,7 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
 
         }
-        /*
+
 
         for (int j = 0; j < tsvFiles_Disease.length; j++) {
 
@@ -142,23 +149,20 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
             for (DisGeNetModelVariantDisease row : rows) {
                 // Testing the mapping so a threshold for 10 nodes each is created temporarily.
 
-                counter += 1;
+                counter_2 += 1;
 
-                if (counter <= 20) {
+                if (counter_2 <= 20) {
 
                     // TODO: Adapt node structures to VariantDiseases
-                    tempGeneNode = createGeneNode(graph, row, row.diseaseID, row.geneSymbol);
-
-                    tempDiseaseNode = createDiseaseNode(graph, row, row.diseaseID, row.diseaseName, row.diseaseType, row.diseaseClass,
-                                                        row.diseaseSemanticType);
-
-                    // add edges here
-                    Edge edge = graph.addEdge(tempGeneNode, tempDiseaseNode, "ASSOCIATED_WITH");
-                    edge.setProperty("score", row.score);
+                    tempVariantDiseaseNode = createVariantDiseaseNode(graph, row, row.snpId, row.chromosome, row.position);
 
 
-                    tempGeneNode = null;
-                    tempDiseaseNode = null;
+                    // TODO: Add proper edges and relationships between diseases and chromosomes (?)
+                   // Edge edge = graph.addEdge(tempGeneNode, tempDiseaseNode, "ASSOCIATED_WITH");
+                    //edge.setProperty("score", row.score);
+
+
+                    tempVariantDiseaseNode = null;
 
                 } else {
                     break;
@@ -166,7 +170,7 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
             }
 
-        } */
+        }
 
 
         return true;
@@ -225,6 +229,30 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
     }
 
+    private Node createVariantDiseaseNode(final Graph graph, DisGeNetModelVariantDisease entry, String ID, String chromosome, String position)
+    {
+        Node chromosomeDiseaseNode = graph.findNode("Disease", "id", entry.snpId);
+
+        if (chromosomeDiseaseNode == null)
+        {
+
+            chromosomeDiseaseNode = createNode(graph, "Gene");
+            chromosomeDiseaseNode.setProperty(ID, entry.snpId);
+            chromosomeDiseaseNode.setProperty(chromosome, entry.chromosome);
+            chromosomeDiseaseNode.setProperty(position, entry.position);
+            graph.update(chromosomeDiseaseNode);
+            return  chromosomeDiseaseNode;
+        }
+        else
+        {
+
+            graph.update(chromosomeDiseaseNode);
+            return chromosomeDiseaseNode;
+
+        }
+
+
+    }
 
 
 
