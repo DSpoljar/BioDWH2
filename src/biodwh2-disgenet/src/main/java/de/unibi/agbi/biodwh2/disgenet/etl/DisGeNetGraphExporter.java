@@ -93,11 +93,11 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
             for (DisGeNetModel row : rows)
             {
-                // Testing the mapping so a threshold for 20 nodes each is created temporarily.
+                // Testing the mapping so a threshold for 50 nodes each is created temporarily.
 
                 counter +=1;
 
-                if (counter <= 20)
+                if (counter <= 50)
                 {
 
                     tempGeneNode = createGeneNode(graph, row, row.geneID, row.geneSymbol);
@@ -147,19 +147,19 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
             }
 
             for (DisGeNetModelVariantDisease row : rows) {
-                // Testing the mapping so a threshold for 10 nodes each is created temporarily.
+                // Testing the mapping so a threshold for 50 nodes each is created temporarily.
 
                 counter_2 += 1;
 
-                if (counter_2 <= 20) {
+                if (counter_2 <= 50) {
 
-                    // TODO: Adapt node structures to VariantDiseases
+
                     tempVariantDiseaseNode = createVariantNode(graph, row, row.snpId, row.chromosome, row.position);
                     tempDiseaseNode =  tempDiseaseNode = createDiseaseNode_variant(graph, row, row.diseaseID, row.diseaseName, row.diseaseType, row.diseaseClass,
                                                                            row.diseaseSemanticType);
 
 
-                    // TODO: Add proper edges and relationships between diseases and chromosomes (?)
+
                     Edge edge = graph.addEdge(tempVariantDiseaseNode, tempDiseaseNode, "ASSOCIATED_WITH");
                     edge.setProperty("score", row.score);
 
@@ -190,7 +190,7 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
         {
 
             geneNode = createNode(graph, "Gene");
-            geneNode.setProperty("ID", entry.geneID); // Beliebige keys mit beliebigen Werten
+            geneNode.setProperty("ID", entry.geneID);
             geneNode.setProperty("GeneSymbol", entry.geneSymbol);
             graph.update(geneNode);
             return  geneNode;
@@ -217,7 +217,7 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
             diseaseNode.setProperty("Name", entry.diseaseName);
             diseaseNode.setProperty("Type", entry.diseaseType);
             diseaseNode.setProperty("Class", entry.diseaseClass);
-            diseaseNode.setProperty("Semantic Type", entry.diseaseSemanticType);
+            diseaseNode.setProperty("SemanticType", entry.diseaseSemanticType);
             graph.update(diseaseNode);
             return diseaseNode;
         }
@@ -243,7 +243,7 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
             diseaseNode.setProperty("Name", entry.diseaseName);
             diseaseNode.setProperty("Type", entry.diseaseType);
             diseaseNode.setProperty("Class", entry.diseaseClass);
-            diseaseNode.setProperty("Semantic Type", entry.diseaseSemanticType);
+            diseaseNode.setProperty("SemanticType", entry.diseaseSemanticType);
             graph.update(diseaseNode);
             return diseaseNode;
         }
