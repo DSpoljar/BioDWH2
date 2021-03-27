@@ -45,13 +45,13 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
         // TSV-Files for Gene-Disease associations
         String[] tsvFiles_Genes = new String[2];
         tsvFiles_Genes[0] = "all_gene_disease_associations.tsv.gz";
-        tsvFiles_Genes[1] = "all_gene_disease_pmid_associations.tsv.gz";
+       // tsvFiles_Genes[1] = "all_gene_disease_pmid_associations.tsv.gz";
        // tsvFiles_Genes[2] = "befree_gene_disease_associations.tsv.gz";
        // tsvFiles_Genes[3] = "curated_gene_disease_associations.tsv.gz";
 
         String[] tsvFiles_Disease = new String[2];
         tsvFiles_Disease[0] = "all_variant_disease_associations.tsv.gz";
-        tsvFiles_Disease[1] = "all_variant_disease_pmid_associations.tsv.gz";
+        //tsvFiles_Disease[1] = "all_variant_disease_pmid_associations.tsv.gz";
        // tsvFiles_Disease[2] = "befree_variant_disease_associations.tsv.gz";
        // tsvFiles_Disease[3] = "curated_variant_disease_associations.tsv.gz";
 
@@ -60,8 +60,8 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
         MappingIterator<DisGeNetModel> iterator = null;
         MappingIterator<DisGeNetModelVariantDisease> iterator_2 = null;
 
-        int counter = 0;
-        int counter_2 = 0;
+       // int counter = 0;
+        //int counter_2 = 0;
 
         // Initializing temporary nodes for the edges.
         Node tempGeneNode = null;
@@ -93,12 +93,12 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
             for (DisGeNetModel row : rows)
             {
-                // Testing the mapping so a threshold for 50 nodes each is created temporarily.
 
-                counter +=1;
 
-                if (counter <= 50)
-                {
+
+
+
+
 
                     tempGeneNode = createGeneNode(graph, row, row.geneID, row.geneSymbol);
 
@@ -109,15 +109,12 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
                     Edge edge = graph.addEdge(tempGeneNode, tempDiseaseNode, "ASSOCIATED_WITH");
                     edge.setProperty("score", row.score);
 
+                System.out.println("Current geneID is: "+row.geneID);
 
                     tempGeneNode = null;
                     tempDiseaseNode = null;
 
-                }
-                else
-                {
-                    break;
-                }
+
         }
 
 
@@ -149,9 +146,9 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
             for (DisGeNetModelVariantDisease row : rows) {
                 // Testing the mapping so a threshold for 50 nodes each is created temporarily.
 
-                counter_2 += 1;
 
-                if (counter_2 <= 50) {
+
+
 
 
                     tempVariantDiseaseNode = createVariantNode(graph, row, row.snpId, row.chromosome, row.position);
@@ -162,14 +159,11 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
 
                     Edge edge = graph.addEdge(tempVariantDiseaseNode, tempDiseaseNode, "ASSOCIATED_WITH");
                     edge.setProperty("score", row.score);
-
+                    System.out.println("Current row snpID is: "+row.snpId);
 
                     tempVariantDiseaseNode = null;
                     tempDiseaseNode = null;
 
-                } else {
-                    break;
-                }
 
             }
 
@@ -198,7 +192,7 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
         else
         {
 
-           graph.update(geneNode);
+
            return geneNode;
 
         }
@@ -224,7 +218,7 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
         else
             {
 
-            graph.update(diseaseNode);
+
             return diseaseNode;
 
           }
@@ -250,7 +244,7 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
         else
         {
 
-            graph.update(diseaseNode);
+
             return diseaseNode;
 
         }
@@ -266,16 +260,16 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource>
         {
 
             variantDiseaseNode = createNode(graph, "Variant");
-            variantDiseaseNode.setProperty(ID, entry.snpId);
-            variantDiseaseNode.setProperty(chromosome, entry.chromosome);
-            variantDiseaseNode.setProperty(position, entry.position);
+            variantDiseaseNode.setProperty("snpId", entry.snpId);
+            variantDiseaseNode.setProperty("chromosome", entry.chromosome);
+            variantDiseaseNode.setProperty("position", entry.position);
             graph.update(variantDiseaseNode);
             return variantDiseaseNode;
         }
         else
         {
 
-            graph.update(variantDiseaseNode);
+
             return variantDiseaseNode;
 
         }
