@@ -20,7 +20,8 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
 {
 
     public final String currentVersionLink = "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo";
-    public final String downloadLink = "http://purl.obolibrary.org/obo/hp.obo";
+    //public final String downloadLink = "http://purl.obolibrary.org/obo/hp.obo";
+    //public final String phenotypeLink = "http://purl.obolibrary.org/obo/hp/hpoa/genes_to_phenotype.txt";
 
 
 
@@ -50,7 +51,7 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
     @Override
     protected String getDownloadUrl()
     {
-        return downloadLink;
+        return currentVersionLink;
     }
 
     @Override
@@ -115,7 +116,7 @@ public class HPOUpdater extends OBOOntologyUpdater<HPODataSource>
     @Override
     protected String getTargetFileName()
     {
-        return "ho.obo";
+        return "hp.obo";
     }
 
 
