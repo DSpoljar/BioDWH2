@@ -38,12 +38,20 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
     }
 
     private void exportEntry(final Graph graph, final OboEntry entry) {
-        if (entry.containsKey("is_obsolete") && "true".equalsIgnoreCase(entry.getFirst("is_obsolete")))
+       if (entry.containsKey("is_obsolete") && "true".equalsIgnoreCase(entry.getFirst("is_obsolete")))
             return;
-        Node node = createNode(graph, "Term");
-        node.setProperty("DATABASE", entry.getFirst("disease-db"));
-        node.setProperty("ID", entry.getFirst("HPO-ID"));
-        node.setProperty("NAME", entry.getFirst("disease-name"));
-        node.setProperty("IDENTIFIER", entry.getFirst("disease-identifier"));
+       else
+       {
+           Node node = createNode(graph, "Term");
+           node.setProperty("ID", entry.getFirst("name"));
+           node.setProperty("name", entry.getFirst("ID"));
+           node.setProperty("altID", entry.getFirst("altID"));
+           node.setProperty("xref", entry.getFirst("xref"));
+           node.setProperty("is_a", entry.getFirst("is_a"));
+           graph.update(node);
+
+
+       }
+
     }
 }
