@@ -29,7 +29,8 @@ public class DisGeNetUpdater extends Updater<DisGeNetDataSource>
             "curated_gene_disease_associations.tsv.gz", "befree_gene_disease_associations.tsv.gz",
             "all_gene_disease_pmid_associations.tsv.gz", "all_gene_disease_associations.tsv.gz",
             "curated_variant_disease_associations.tsv.gz", "befree_variant_disease_associations.tsv.gz",
-            "all_variant_disease_associations.tsv.gz", "all_variant_disease_pmid_associations.tsv.gz"
+            "all_variant_disease_associations.tsv.gz", "all_variant_disease_pmid_associations.tsv.gz",
+            "disease_to_disease_CURATED.tsv.gz"
 
             };
 

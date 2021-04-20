@@ -37,6 +37,9 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource> {
                 //"befree_variant_disease_associations.tsv.gz"
                 "curated_variant_disease_associations.tsv.gz"
         };
+
+        // TODO: Include disease-disease associations?
+
         int counter = 0;
         for (String tsvFiles_gene : geneDiseaseFiles)
         {
@@ -139,4 +142,6 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource> {
         }
         return variantDiseaseNode;
     }
+
+    // TODO: Create Disease-Disease node?
 }
