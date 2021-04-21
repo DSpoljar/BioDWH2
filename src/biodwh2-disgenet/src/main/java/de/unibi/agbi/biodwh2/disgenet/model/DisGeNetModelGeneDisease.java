@@ -18,7 +18,7 @@ import de.unibi.agbi.biodwh2.disgenet.etl.DisGeNetGraphExporter;
 })
 
 
-public class DisGeNetModel
+public class DisGeNetModelGeneDisease
 {
     @JsonProperty("geneID")
     public String geneID;

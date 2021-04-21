@@ -20,10 +20,12 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource> {
         super(dataSource);
     }
 
-    // Still WIP.
+
     @Override
     protected boolean exportGraph(final Workspace workspace, final Graph graph) {
+
         graph.setNodeIndexPropertyKeys("id");
+        
         // TSV-Files for Gene-Disease associations
         final String[] geneDiseaseFiles = new String[]{
                 //"all_gene_disease_associations.tsv.gz"
@@ -38,18 +40,22 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource> {
                 "curated_variant_disease_associations.tsv.gz"
         };
 
-        // TODO: Include disease-disease associations?
+        final String[] diseaseDiseaseFiles = new String[]{
+              "disease_to_disease_CURATED.tsv.gz"
+              // disease_to_disease_ALL.tsv.gz (No permission to access anyways)
+        };
 
         int counter = 0;
+
         for (String tsvFiles_gene : geneDiseaseFiles)
         {
             LOGGER.info("Exporting " + tsvFiles_gene);
             try {
-                final MappingIterator<DisGeNetModel> iterator = FileUtils.openGzipTsvWithHeader(workspace, dataSource,
-                                                                                                tsvFiles_gene,
-                                                                                                DisGeNetModel.class);
+                final MappingIterator<DisGeNetModelGeneDisease> iterator = FileUtils.openGzipTsvWithHeader(workspace, dataSource,
+                                                                                                           tsvFiles_gene,
+                                                                                                           DisGeNetModelGeneDisease.class);
                 while (iterator.hasNext()) {
-                    final DisGeNetModel row = iterator.next();
+                    final DisGeNetModelGeneDisease row = iterator.next();
                     final Node geneNode = createGeneNode(graph, row);
                     final Node diseaseNode = createDiseaseNode(graph, row);
                     graph.addEdge(geneNode, diseaseNode, "ASSOCIATED_WITH", "score", row.score);
@@ -83,10 +89,33 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource> {
                 e.printStackTrace();
             }
         }
+        counter = 0;
+        for (String s : diseaseDiseaseFiles)
+        {
+            LOGGER.info("Exporting " + s);
+            try {
+                final MappingIterator<DisGeNetModelDiseaseDisease> iterator = FileUtils.openGzipTsvWithHeader(workspace,
+                                                                                                              dataSource,
+                                                                                                              s,
+                                                                                                              DisGeNetModelDiseaseDisease.class);
+                while (iterator.hasNext()) {
+                    final DisGeNetModelDiseaseDisease row = iterator.next();
+                    final Node diseaseNode1 = createDiseaseDiseaseNode1(graph, row);
+                    final Node diseaseNode2 = createDiseaseDiseaseNode2(graph, row);
+                    graph.addEdge(diseaseNode1, diseaseNode2, "UNION_GENES", "union_genes", row.union_genes);
+                    graph.addEdge(diseaseNode1, diseaseNode2, "UNION_VARIANT", "union_genes", row.union_variant);
+                    counter++;
+                    if (counter % 1000 == 0)
+                        LOGGER.info("Progress: " + counter);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return true;
     }
 
-    private Node createGeneNode(final Graph graph, final DisGeNetModel entry) {
+    private Node createGeneNode(final Graph graph, final DisGeNetModelGeneDisease entry) {
         Node geneNode = graph.findNode("Gene", "id", entry.geneID);
         if (geneNode == null)
         {
@@ -98,7 +127,7 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource> {
         return geneNode;
     }
 
-    private Node createDiseaseNode(final Graph graph, final DisGeNetModel entry) {
+    private Node createDiseaseNode(final Graph graph, final DisGeNetModelGeneDisease entry) {
         Node diseaseNode = graph.findNode("Disease", "id", entry.geneID);
 
         if (diseaseNode == null)
@@ -143,5 +172,32 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource> {
         return variantDiseaseNode;
     }
 
-    // TODO: Create Disease-Disease node?
+    private Node createDiseaseDiseaseNode1(final Graph graph, final DisGeNetModelDiseaseDisease entry)
+    {
+        Node diseaseNode1 = graph.findNode("Disease1", "diseaseId1", entry.diseaseId1);
+        if (diseaseNode1 == null)
+        {
+            diseaseNode1 = createNode(graph, "Disease1");
+            diseaseNode1.setProperty("diseaseId1", entry.diseaseId1);
+            diseaseNode1.setProperty("diseaseId1_name", entry.diseaseId1_name);
+            diseaseNode1.setProperty("source", entry.source);
+            graph.update(diseaseNode1);
+        }
+        return diseaseNode1;
+    }
+
+    private Node createDiseaseDiseaseNode2(final Graph graph, final DisGeNetModelDiseaseDisease entry)
+    {
+        Node diseaseNode2 = graph.findNode("Variant", "diseaseID2", entry.diseaseId2);
+        if (diseaseNode2 == null)
+        {
+            diseaseNode2 = createNode(graph, "Disease2");
+            diseaseNode2.setProperty("diseaseId2", entry.diseaseId2);
+            diseaseNode2.setProperty("diseaseId2_name", entry.diseaseId2_name);
+            diseaseNode2.setProperty("source", entry.source);
+            diseaseNode2.setProperty("NVariants", entry.Nvariants);
+            graph.update(diseaseNode2);
+        }
+        return diseaseNode2;
+    }
 }
