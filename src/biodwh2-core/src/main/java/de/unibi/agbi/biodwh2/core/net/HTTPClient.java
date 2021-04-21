@@ -57,15 +57,15 @@ public final class HTTPClient {
     }
 
     public static InputStream getUrlInputStream(final String url) throws IOException {
-        final URLConnection urlConnection = new URL(url).openConnection();
-        urlConnection.setRequestProperty("User-Agent", USER_AGENT);
-        return urlConnection.getInputStream();
+        return getUrlInputStream(url, null, null);
     }
 
     public static InputStream getUrlInputStream(final String url, final String username,
                                                 final String password) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) new URL(url).openConnection();
-        urlConnection.setRequestProperty("Authorization", getBasicAuthForCredentials(username, password));
+        if (username != null && password != null)
+            urlConnection.setRequestProperty("Authorization", getBasicAuthForCredentials(username, password));
+        urlConnection.setRequestProperty("User-Agent", USER_AGENT);
         urlConnection.setInstanceFollowRedirects(false);
         urlConnection.connect();
         urlConnection = redirectURLConnectionIfNecessary(urlConnection);
