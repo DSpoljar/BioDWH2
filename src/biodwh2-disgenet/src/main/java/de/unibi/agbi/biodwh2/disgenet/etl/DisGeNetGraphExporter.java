@@ -25,7 +25,7 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource> {
     protected boolean exportGraph(final Workspace workspace, final Graph graph) {
 
         graph.setNodeIndexPropertyKeys("id");
-        
+
         // TSV-Files for Gene-Disease associations
         final String[] geneDiseaseFiles = new String[]{
                 //"all_gene_disease_associations.tsv.gz"

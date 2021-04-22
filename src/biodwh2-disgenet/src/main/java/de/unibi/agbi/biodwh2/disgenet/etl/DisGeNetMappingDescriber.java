@@ -18,6 +18,7 @@ public class DisGeNetMappingDescriber extends MappingDescriber {
 
     }
 
+    // TODO: Analoguous functionalities for Disease-Disease and Variant-Disease
 
     @Override
     public NodeMappingDescription describe(final Graph graph, final Node node, final String localMappingLabel)
@@ -33,36 +34,45 @@ public class DisGeNetMappingDescriber extends MappingDescriber {
         final NodeMappingDescription description = new NodeMappingDescription(NodeMappingDescription.NodeType.GENE);
         description.addName(node.getProperty("id"));
         description.addName(node.getProperty("gene_symbol"));
-      // DisGeNet gene identifier? ->  description.addIdentifier(IdentifierType., ...);
-      // Needs identifiers to loop through.
+        description.addIdentifier(IdentifierType.HGNC_SYMBOL, getGeneIdFromNode(node));
+        description.addIdentifier(IdentifierType.DISGENET, getGeneIdFromNode(node));
         return description;
     }
 
     private NodeMappingDescription describeDisease(final Node node) {
         final NodeMappingDescription description = new NodeMappingDescription(NodeMappingDescription.NodeType.DISEASE);
         description.addName(node.getProperty("id"));
-        description.addName(node.getProperty("type"));
-        description.addName(node.getProperty("class"));
-        // DisGeNet identifier? ->  description.addIdentifier(IdentifierType., ...);
+        description.addName(node.getProperty("diseaseName"));
+       // Optional? -> description.addName(node.getLabel());
+        description.addIdentifier(IdentifierType.UMLS_CUI, getDiseaseIdFromNode(node));
 
         return description;
     }
 
-    // TODO: Curated variants as descriptions?
 
     @Override
     protected String[] getNodeMappingLabels() {
 
 
-        return new String[0];
+        return new String[]{"Gene", "Disease"};
+
+    }
+
+    private String getGeneIdFromNode(final Node node) {
+        return node.<String>getProperty(geneID).replace("geneID:", "");
+    }
+
+    private String getDiseaseIdFromNode(final Node node) {
+        return node.<String>getProperty(diseaseID).replace("diseaseID:", "");
     }
 
     @Override
     public PathMappingDescription describe(final Graph graph, final Node[] nodes, final Edge[] edges)
     {
-
         return null;
     }
+
+    // Hmm ...
 
     @Override
     protected String[][] getEdgeMappingPaths() {
