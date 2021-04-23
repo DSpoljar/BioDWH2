@@ -177,9 +177,9 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource> {
         Node diseaseNode1 = graph.findNode("Disease1", "diseaseId1", entry.diseaseId1);
         if (diseaseNode1 == null)
         {
-            diseaseNode1 = createNode(graph, "Disease1");
-            diseaseNode1.setProperty("diseaseId1", entry.diseaseId1);
-            diseaseNode1.setProperty("diseaseId1_name", entry.diseaseId1_name);
+            diseaseNode1 = createNode(graph, "Disease");
+            diseaseNode1.setProperty("diseaseId", entry.diseaseId1);
+            diseaseNode1.setProperty("diseaseId_name", entry.diseaseId1_name);
             diseaseNode1.setProperty("source", entry.source);
             graph.update(diseaseNode1);
         }
@@ -191,9 +191,9 @@ public class DisGeNetGraphExporter extends GraphExporter<DisGeNetDataSource> {
         Node diseaseNode2 = graph.findNode("Variant", "diseaseID2", entry.diseaseId2);
         if (diseaseNode2 == null)
         {
-            diseaseNode2 = createNode(graph, "Disease2");
-            diseaseNode2.setProperty("diseaseId2", entry.diseaseId2);
-            diseaseNode2.setProperty("diseaseId2_name", entry.diseaseId2_name);
+            diseaseNode2 = createNode(graph, "Disease");
+            diseaseNode2.setProperty("diseaseId", entry.diseaseId2);
+            diseaseNode2.setProperty("disease_name", entry.diseaseId2_name);
             diseaseNode2.setProperty("source", entry.source);
             diseaseNode2.setProperty("NVariants", entry.Nvariants);
             graph.update(diseaseNode2);
