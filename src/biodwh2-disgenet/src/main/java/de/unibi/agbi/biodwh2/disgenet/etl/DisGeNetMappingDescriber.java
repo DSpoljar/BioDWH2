@@ -18,7 +18,7 @@ public class DisGeNetMappingDescriber extends MappingDescriber {
 
     }
 
-    // TODO: Analoguous functionalities for Disease-Disease and Variant-Disease
+
 
     @Override
     public NodeMappingDescription describe(final Graph graph, final Node node, final String localMappingLabel)

@@ -12,6 +12,7 @@ import de.unibi.agbi.biodwh2.core.model.graph.Graph;
 import de.unibi.agbi.biodwh2.core.model.graph.Node;
 import de.unibi.agbi.biodwh2.hpo.HPODataSource;
 import de.unibi.agbi.biodwh2.hpo.model.HPOModel;
+import de.unibi.agbi.biodwh2.hpo.model.HPOPhenotypeToGenesModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
 
     final String[] txtFiles = new String[]{
 
-            "phenotypes_to_genes.txt"
+            "phenotype_to_genes.txt"
 
     };
 
@@ -46,7 +47,7 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
                 if (entry.getName().equals("Term"))
                     exportEntry(graph, entry);
                      counter++;
-                     if (counter % 1000 == 0)
+                     if (counter % 10 == 0)
                      LOGGER.info("Progress: " + counter);
         } catch (IOException e) {
             throw new ExporterFormatException("Failed to export hp.obo", e);
@@ -60,15 +61,23 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
             LOGGER.info("Exporting " + file);
             try {
 
-                final MappingIterator<HPOModel> iterator = FileUtils.openCsv(workspace, dataSource,
-                                                                             file,
-                                                                             HPOModel.class);
+                final MappingIterator<HPOPhenotypeToGenesModel> iterator = FileUtils.openCsv(workspace, dataSource,
+                                                                             file, HPOPhenotypeToGenesModel.class);
 
-                // TODO: Add nodes and  edges for phenotype_to_genes
+                // Since there are over 900.000 entries, the counter will be restricted to a smaller amount for now.
+                
+                while(iterator.hasNext() && counter <= 5000)
+                {
 
+                    final HPOPhenotypeToGenesModel row = iterator.next();
+                    final Node node = exportPhenotypeToGeneNode(graph, row);
                     counter++;
-                    if (counter % 1000 == 0)
+                    if (counter % 10 == 0)
                         LOGGER.info("Progress: " + counter);
+
+                }
+
+
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -94,5 +103,20 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
 
        }
 
+    }
+
+    private Node exportPhenotypeToGeneNode(final Graph graph, final HPOPhenotypeToGenesModel entry) {
+        Node node = graph.findNode("EntrezGeneId", "id", entry.ENTREZ_GENE_SYMBOL);
+
+        if (node == null)
+        {
+            node = createNode(graph, "Phenotype");
+            node.setProperty("HPO-ID", entry.HPO_ID);
+            node.setProperty("ENTREZ-GENE-ID", entry.ENTREZ_GENE_ID);
+            node.setProperty("HPO-LABEL", entry.HPO_LABEL);
+
+            graph.update(node);
+        }
+        return node;
     }
 }
