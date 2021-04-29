@@ -44,7 +44,7 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
         try {
             OboReader reader = new OboReader(dataSource.resolveSourceFilePath(workspace, "hp.obo"), "UTF-8");
             for (OboEntry entry : reader)
-                if (entry.getName().equals("Term"))
+                if (entry.getName().equals("Phenotype"))
                     exportEntry(graph, entry);
                      counter++;
                      if (counter % 10 == 0)
@@ -65,7 +65,7 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
                                                                              file, HPOPhenotypeToGenesModel.class);
 
                 // Since there are over 900.000 entries, the counter will be restricted to a smaller amount for now.
-                
+
                 while(iterator.hasNext() && counter <= 5000)
                 {
 
@@ -106,7 +106,7 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
     }
 
     private Node exportPhenotypeToGeneNode(final Graph graph, final HPOPhenotypeToGenesModel entry) {
-        Node node = graph.findNode("EntrezGeneId", "id", entry.ENTREZ_GENE_SYMBOL);
+        Node node = graph.findNode("ID", "id", entry.HPO_ID);
 
         if (node == null)
         {

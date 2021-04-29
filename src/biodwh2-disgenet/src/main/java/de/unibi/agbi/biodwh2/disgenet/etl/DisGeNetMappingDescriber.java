@@ -53,11 +53,12 @@ public class DisGeNetMappingDescriber extends MappingDescriber {
 
     private NodeMappingDescription describeVariant(final Node node) {
         final NodeMappingDescription description = new NodeMappingDescription(NodeMappingDescription.NodeType.VARIANT);
-        description.addName(node.getProperty("snpId")); // GetID maybe?
-        description.addName(node.getProperty("diseaseId"));
-        description.addName(node.getProperty("diseaseName"));
-        // Optional? -> description.addName(node.getLabel());
-        description.addIdentifier(IdentifierType.DISGENET, getDiseaseIdFromNode(node));
+        description.addName(node.getProperty("ID")); //
+        description.addName(node.getProperty("chromosome"));
+        description.addName(node.getProperty("position"));
+        description.addIdentifier(IdentifierType.DB_SNP, getDiseaseIdFromNode(node)); // DB_SNP
+
+
 
         return description;
     }

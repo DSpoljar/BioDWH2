@@ -27,7 +27,8 @@ public enum IdentifierType {
     USDA_PLANTS_SYMBOL("USDA_PLANTS_Symbol"),
     ENSEMBL_GENE_ID("ENSEMBL_Gene"),
     INTERNATIONAL_NONPROPRIETARY_NAMES("INN"),
-    DISGENET("DisGeNet");
+    DISGENET("DisGeNet"),
+    DB_SNP("DB-SNP");
 
     IdentifierType(final String prefix) {
         this.prefix = prefix;
