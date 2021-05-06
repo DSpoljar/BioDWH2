@@ -14,14 +14,14 @@ import de.unibi.agbi.biodwh2.core.model.graph.NodeLabel;
 
 
 @JsonPropertyOrder({
-        "ID", "name", "altID", "def", "synonym", "xref", "is_a"
+        "id", "name", "altID", "def", "synonym", "xref", "is_a"
 })
 
 
 public class HPOModel
 {
-    @JsonProperty("ID")
-    public String geneID;
+    @JsonProperty("id")
+    public String id;
     @JsonProperty("name")
     public String name;
     @JsonProperty("altID")
