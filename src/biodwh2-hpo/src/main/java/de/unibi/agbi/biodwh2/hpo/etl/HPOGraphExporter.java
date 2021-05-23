@@ -41,7 +41,7 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
     {
         int counter = 0;
 
-         Node PhenoNode = null;
+        Node PhenoNode = null;
 
 
         graph.setNodeIndexPropertyKeys("id");
@@ -79,16 +79,12 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
 
                     final HPOPhenotypeToGenesModel row = iterator.next();
                     final Node pgNode = exportPhenotypeToGeneNode(graph, row);
-                    // Checks whether the HPO-keys match.
-                    if (pgNode.getProperty("key") == PhenoNode.getProperty("HPO-ID"))
-                    {
-                        graph.addEdge(pgNode, PhenoNode, "ASSOCIATED_WITH", "ID", row.HPO_ID);
-                    }
+                    // Issue: Only links/finds one ID?
+                    final Node tempPhenoNode = graph.findNode("id", PhenoNode.get(row.ENTREZ_GENE_ID));
 
 
-
-
-                    //graph.addEdge(diseaseNode1, pgNode, "UNION_GENES", "union_genes", row.HPO_ID;
+                    graph.addEdge(pgNode, tempPhenoNode,
+                                  "LINKED_WITH", "ENTREZ-GENE-ID", row.ENTREZ_GENE_ID);
 
 
                     counter++;
@@ -115,7 +111,7 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
         if (node == null)
        {
            node = createNode(graph, "Phenotype");
-           node.setProperty("ID", entry.getFirst("id"));
+           node.setProperty("id", entry.getFirst("id"));
            node.setProperty("name", entry.getFirst("name"));
            node.setProperty("altID", entry.getFirst("altID"));
            node.setProperty("xref", entry.getFirst("xref"));
@@ -129,30 +125,19 @@ public class HPOGraphExporter extends GraphExporter<HPODataSource>
 
     private Node exportPhenotypeToGeneNode(final Graph graph, final HPOPhenotypeToGenesModel entry) {
 
-        Node node = graph.findNode("Gene", "HPO_SYMBOL", entry.ENTREZ_GENE_SYMBOL);
+        Node node = graph.findNode("Gene", "ENTREZ-GENE-SYMBOL", entry.ENTREZ_GENE_SYMBOL);
 
         if (node == null)
         {
             node = createNode(graph, "Gene");
-            node.setProperty("HPO-ID", entry.HPO_ID);
+            node.setProperty("ENTREZ-GENE-SYMBOL", entry.ENTREZ_GENE_SYMBOL);
             node.setProperty("ENTREZ-GENE-ID", entry.ENTREZ_GENE_ID);
-            node.setProperty("HPO-LABEL", entry.HPO_LABEL);
+
 
             graph.update(node);
         }
         return node;
     }
 
-    /* Might be needed later.
-    private Node exportPhenotype(final Graph graph, final HPOModel entry) {
-        Node node = graph.findNode("Gene", "HPO_ID", entry.name);
 
-        if (node == null)
-        {
-            node = createNode(graph, "Phenotype");
-
-            graph.update(node);
-        }
-        return node;
-    } */
 }
